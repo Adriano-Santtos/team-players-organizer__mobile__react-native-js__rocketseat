@@ -4,7 +4,7 @@ import {Container} from './styles';
 import {GroupCard} from '@components/GroupCard';
 import {useState} from "react";
 import {FlatList} from "react-native";
-import { ListEmpty } from '@components/ListEmpty';
+import {ListEmpty} from '@components/ListEmpty';
 import {Button} from "@components/Button";
 
 export function Groups() {
@@ -28,7 +28,7 @@ export function Groups() {
                 )}
                 contentContainerStyle={groups.length === 0 && {flex: 1}}
                 ListEmptyComponent={() => (
-                    <ListEmpty 
+                    <ListEmpty
                         message="Que tal cadastrar a primeira turma?"
                     />
                 )}
