@@ -1,5 +1,4 @@
 import styled from "styled-components/native";
-import { Roboto_400Regular } from '@expo-google-fonts/roboto';
 
 export const Container = styled.View`
     flex: 1;
@@ -9,10 +8,10 @@ export const Container = styled.View`
 `;
 
 export const Message = styled.Text`
-    text-align: center;
+            text-align: center;
 
-    font-size: ${({ theme }) => theme.FONT_SIZE.SM}px;
-    font-family: ${({ theme }) => theme.FONT_FAMILY.REGULAR};
-    color: ${({theme}) => theme.COLORS.GRAY_300};
-`
+            font-size: ${({theme}) => theme.FONT_SIZE.SM}px;
+            font-family: ${({theme}) => theme.FONT_FAMILY.REGULAR};
+            color: ${({theme}) => theme.COLORS.GRAY_300};
+    `
 ;
