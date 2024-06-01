@@ -7,13 +7,19 @@ import {Input} from "@components/Input";
 
 import {Container, Content, Icon} from "@screens/NewGroup/styles";
 import {useState} from "react";
+import {groupCreate} from "@storage/group/groupCreate";
 
 export function NewGroup() {
     const navigation = useNavigation();
     const [group, setGroup] = useState('');
 
-    function handleNew() {
-        navigation.navigate('players', { group: group })
+    async function handleNew() {
+        try {
+            await groupCreate(group)
+            navigation.navigate('players', { group: group })
+        } catch (error) {
+            throw error;
+        }
     }
 
     return (
