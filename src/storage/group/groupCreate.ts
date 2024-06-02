@@ -13,7 +13,7 @@ export async function groupCreate(newGroup: string) {
         const groupAlreadyExists = storedGroups.includes(newGroup)
 
         if (groupAlreadyExists) {
-            throw new AppError("Group already exists");
+            throw new AppError("Group name already exists");
         }
 
         const newCollection = JSON.stringify([...storedGroups, newGroup]);
