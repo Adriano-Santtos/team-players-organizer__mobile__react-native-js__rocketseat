@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {FlatList} from "react-native";
+import {Alert, FlatList} from "react-native";
 import {useRoute} from "@react-navigation/native";
 
 import {Header} from "@components/Header";
@@ -12,6 +12,8 @@ import {PlayerCard} from "@components/PlayerCard";
 import {ListEmpty} from "@components/ListEmpty";
 
 import {Container, Form, HeaderList, NumbersOfPlayers} from "@screens/Players/styles";
+import {playerAddByGroup} from "@storage/players/playerAddByGroup";
+import {AppError} from "@utils/AppError";
 
 type RouteParams = {
     group: string;
@@ -20,9 +22,34 @@ type RouteParams = {
 export function Players() {
     const [team, setTeam] = useState('Time A');
     const [player, setPlayer] = useState([]);
+    const [playerName, setPlayerName] = useState('');
 
     const route = useRoute();
     const {group} = route.params as RouteParams
+
+    async function handleAddPlayer() {
+        if (playerName.trim().length === 0) {
+            return Alert.alert('Nova pessoa', 'Informe o nome da pessoa para adicionar.');
+        }
+
+        const newPlayer = {
+            name: playerName,
+            team: team,
+        }
+
+        try {
+            await playerAddByGroup(newPlayer, group)
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                Alert.alert('Nova pessoa', error.message);
+            } else {
+                console.log(error);
+                Alert.alert('Nova pessoa', 'Não foi possível adicionar.')
+            }
+        }
+
+    }
 
     return (
         <Container>
@@ -39,9 +66,11 @@ export function Players() {
                 <Input
                     placeholder='Nome da pessoa'
                     autoCorrect={false} //corretor não vai tentar corrigir a entrada
+                    onChangeText={setPlayerName}
                 />
                 <ButtonIcon
                     icon='add'
+                    onPress={handleAddPlayer}
                 />
             </Form>
 
