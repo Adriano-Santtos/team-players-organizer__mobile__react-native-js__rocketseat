@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {Alert, FlatList} from "react-native";
+import React, {useEffect, useRef, useState} from "react";
+import {Alert, FlatList, TextInput} from "react-native";
 import {useRoute} from "@react-navigation/native";
 
 import {AppError} from "@utils/AppError";
@@ -25,26 +25,32 @@ type RouteParams = {
 
 export function Players() {
     const [team, setTeam] = useState('Time A');
-    const [player, setPlayer] = useState<PlayersStorageDTO[]>([]);
-    const [playerName, setPlayerName] = useState('');
+    const [players, setPlayers] = useState<PlayersStorageDTO[]>([]);
+    const [newPlayerName, setNewPlayerName] = useState('');
+
+    const newPlayerNameInputRef = useRef<TextInput>(null)
 
     const route = useRoute();
     const {group} = route.params as RouteParams
 
     async function handleAddPlayer() {
-        if (playerName.trim().length === 0) {
+        if (newPlayerName.trim().length === 0) {
             return Alert.alert('Nova pessoa', 'Informe o nome da pessoa para adicionar.');
         }
 
         const newPlayer = {
-            name: playerName,
+            name: newPlayerName,
             team: team,
         }
 
         try {
-            await playerAddByGroup(newPlayer, group)
-            fetchPlayersByTeam()
+            await playerAddByGroup(newPlayer, group);
 
+            newPlayerNameInputRef.current?.blur();
+
+            setNewPlayerName('');
+
+            await fetchPlayersByTeam();
         } catch (error) {
             if (error instanceof AppError) {
                 Alert.alert('Nova pessoa', error.message);
@@ -58,7 +64,7 @@ export function Players() {
     async function fetchPlayersByTeam() {
         try {
             const playerByTeam = await playersGetByGroupAndTeam(group, team)
-            setPlayer(playerByTeam)
+            setPlayers(playerByTeam)
         } catch (error) {
             console.log(error)
             Alert.alert('Pessoas', 'Não foi possível carregar as pessoas do time selecionado.');
@@ -83,9 +89,13 @@ export function Players() {
 
             <Form>
                 <Input
+                    inputRef={newPlayerNameInputRef}
+                    value={newPlayerName}
                     placeholder='Nome da pessoa'
                     autoCorrect={false} //corretor não vai tentar corrigir a entrada
-                    onChangeText={setPlayerName}
+                    onChangeText={setNewPlayerName}
+                    onSubmitEditing={handleAddPlayer} // config para o enter do teclado disparar a ação
+                    returnKeyType="done" // idem de cima
                 />
                 <ButtonIcon
                     icon='add'
@@ -108,11 +118,11 @@ export function Players() {
                 />
 
                 <NumbersOfPlayers>
-                    {player.length}
+                    {players.length}
                 </NumbersOfPlayers>
             </HeaderList>
             <FlatList
-                data={player}
+                data={players}
                 keyExtractor={item => item.name}
                 renderItem={({item}) => (
                     <PlayerCard
@@ -129,7 +139,7 @@ export function Players() {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={[
                     {paddingBottom: 100},
-                    player.length === 0 && {flex: 1} // caso não há dados na lista
+                    players.length === 0 && {flex: 1} // caso não há dados na lista
                 ]} // aumentar o espaçamento entre a borda e o último elemento
             />
 
