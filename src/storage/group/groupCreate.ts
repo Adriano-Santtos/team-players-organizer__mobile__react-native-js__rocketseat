@@ -9,7 +9,6 @@ import {GROUP_COLLECTION} from "@storage/storageConfig";
 export async function groupCreate(newGroup: string) {
     try {
         const storedGroups = await groupGetAll();
-
         const groupAlreadyExists = storedGroups.includes(newGroup)
 
         if (groupAlreadyExists) {

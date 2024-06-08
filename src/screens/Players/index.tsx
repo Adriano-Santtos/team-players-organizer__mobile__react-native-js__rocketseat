@@ -1,6 +1,8 @@
 import React, {useEffect, useRef, useState} from "react";
+
 import {Alert, FlatList, TextInput} from "react-native";
-import {useRoute} from "@react-navigation/native";
+
+import {useNavigation, useRoute} from "@react-navigation/native";
 
 import {AppError} from "@utils/AppError";
 
@@ -17,8 +19,10 @@ import {playerAddByGroup} from "@storage/players/playerAddByGroup";
 import {playersGetByGroupAndTeam} from "@storage/players/playersGetByGroupAndTeam";
 import {PlayersStorageDTO} from "@storage/players/PlayersStorageDTO";
 
-import {Container, Form, HeaderList, NumbersOfPlayers} from "@screens/Players/styles";
 import {playerRemoveByGroup} from "@storage/players/playerRemoveByGroup";
+import {groupRemoveByName} from "@storage/group/groupRemoveByName";
+
+import {Container, Form, HeaderList, NumbersOfPlayers} from "@screens/Players/styles";
 
 type RouteParams = {
     group: string;
@@ -28,6 +32,8 @@ export function Players() {
     const [team, setTeam] = useState('Time A');
     const [players, setPlayers] = useState<PlayersStorageDTO[]>([]);
     const [newPlayerName, setNewPlayerName] = useState('');
+
+    const navigation = useNavigation();
 
     const newPlayerNameInputRef = useRef<TextInput>(null)
 
@@ -81,6 +87,30 @@ export function Players() {
             Alert.alert('Remover pessoa', 'Não foi possível remover essa pessoa.')
         }
     }
+
+    async function handleRemoveGroup() {
+        Alert.alert(
+            'Remover Grupo',
+            'Tem certeza que deseja remover o grupo?',
+            [
+                {text: 'Não', style: "cancel"},
+                {text: 'Sim', onPress: () => groupRemove()}
+            ]
+        )
+    }
+
+    async function groupRemove() {
+        try {
+            await groupRemoveByName(group)
+
+            navigation.navigate('groups')
+        } catch (error) {
+            console.log(error)
+            Alert.alert('Remover grupo', 'Não foi possível remover o grupo.');
+        }
+
+    }
+
 
     useEffect(() => {
             fetchPlayersByTeam()
@@ -156,6 +186,7 @@ export function Players() {
             <Button
                 title="Remover turma"
                 type="SECUNDARY"
+                onPress={handleRemoveGroup}
             />
 
         </Container>

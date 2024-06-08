@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import {GROUP_COLLECTION} from "@storage/storageConfig";
 
 export async function groupGetAll(): Promise<string[]> {
@@ -7,7 +8,6 @@ export async function groupGetAll(): Promise<string[]> {
 
         return storage ? JSON.parse(storage) : [];
     } catch (error) {
-        // @ts-ignore
-        return error
+        throw error
     }
 }
